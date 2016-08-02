@@ -1,0 +1,23 @@
+Metrics/AbcSize:
+  Max: 24
+
+Metrics/LineLength:
+  Max: 110
+
+Style/Documentation:
+  Enabled: false
+
+Style/IndentArray:
+  EnforcedStyle: consistent
+
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInLiteral:
+  EnforcedStyleForMultiline: comma
+
+Style/AlignParameters:
+  EnforcedStyle: with_fixed_indentation
+
+Style/FrozenStringLiteralComment:
+  Enabled: false

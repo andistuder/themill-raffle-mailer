@@ -5,10 +5,11 @@ require 'sendgrid-ruby'
 RSpec.describe RaffleMailer do
   describe '.send_raffle_confirmation' do
     subject(:send_raffle_confirmation) do
-      described_class.new(api_key).send_raffle_confirmation(to: recipient)
+      described_class.new(api_key).send_raffle_confirmation(email: recipient, email_vars: email_vars)
     end
-
+    let(:email_vars) { double(:email_vars) }
     let(:send_grid) { double(:send_grid, client: double(:client, mail: mail)) }
+    let(:raffle_email) { double(:raffle_email, subject_line: 'Hello World', body: 'Hello, Email!') }
     let(:mail) { double(:mail, _: mail_helper) }
     let(:mail_helper) { double(:mail_helper, post: response) }
     let(:response) { double(:response, status_code: 202, body: 'response body', headers: response_headers) }
@@ -27,7 +28,7 @@ RSpec.describe RaffleMailer do
       {
         request_body: {
           'from' => { 'email' => 'friends@themill-coppermill.org' },
-          'subject' => 'Hello World from the SendGrid Ruby Library!',
+          'subject' => 'Hello World',
           'personalizations' => [{ 'to' => [{ 'email' => 'raffle_player@example.com' }] }],
           'content' => [{ 'type' => 'text/plain', 'value' => 'Hello, Email!' }],
         },
@@ -38,6 +39,7 @@ RSpec.describe RaffleMailer do
 
     before do
       allow(SendGrid::API).to receive(:new).with(api_key: api_key).and_return(send_grid)
+      allow(RaffleEmail).to receive(:new).and_return(raffle_email)
     end
 
     it 'returns a receipt with mailed_at time' do
@@ -47,6 +49,11 @@ RSpec.describe RaffleMailer do
 
     it 'posts the correct body' do
       expect(mail_helper).to receive(:post).with(post_body)
+      send_raffle_confirmation
+    end
+
+    it 'passes the email_vars to the raffle_mailer' do
+      expect(RaffleEmail).to receive(:new).with(email_vars)
       send_raffle_confirmation
     end
 

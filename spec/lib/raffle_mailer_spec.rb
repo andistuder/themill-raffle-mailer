@@ -40,14 +40,21 @@ RSpec.describe RaffleMailer do
       allow(SendGrid::API).to receive(:new).with(api_key: api_key).and_return(send_grid)
     end
 
-    it 'sends an email to the recipient' do
+    it 'returns a receipt with mailed_at time' do
       expect(mail).to receive(:_).with('send')
       expect(send_raffle_confirmation).to eq(status: 202, mailed_at: 'Tue, 02 Aug 2016 19:00:42 GMT')
     end
 
-    it 'post the correct body' do
+    it 'posts the correct body' do
       expect(mail_helper).to receive(:post).with(post_body)
       send_raffle_confirmation
+    end
+
+    context 'when the mail client raises an error' do
+      it 'returns a receipt with status 500' do
+        allow(mail_helper).to receive(:post).and_raise(RuntimeError, 'Meh, something went wrong')
+        expect(send_raffle_confirmation).to eq(status: 500, mailed_at: nil)
+      end
     end
   end
 end

@@ -17,6 +17,9 @@ class RaffleMailer
 
     response = send_grid.client.mail._('send').post(request_body: mail.to_json)
     { status: response.status_code, mailed_at: response.headers['date']&.first }
+  rescue StandardError => e
+    puts "Error: #{e.class} #{e.message}"
+    { status: 500, mailed_at: nil }
   end
 
   private

@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require 'bundler'
+Bundler.setup(:default)
+
+require_relative '../lib/sales_report.rb'
+
+SalesReport.new(ARGV.dup.first).process

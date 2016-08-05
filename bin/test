@@ -1,3 +1,4 @@
 #!/usr/bin/env bash -e
 
-rake -t
+bundle exec rspec
+bundle exec rubocop -D

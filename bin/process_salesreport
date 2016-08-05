@@ -5,4 +5,10 @@ Bundler.setup(:default)
 
 require_relative '../lib/sales_report.rb'
 
-SalesReport.new(ARGV.dup.first).process
+unless ENV['DISABLE_MAILER'] == 'true'
+  puts 'WARN: You are about to email lots of people. Continue? [Y/n]: '
+  input = STDIN.gets.chomp
+  exit unless input == 'Y'
+end
+args = ARGV.dup
+SalesReport.new(source: args[0], destination: args[1]).email_buyers

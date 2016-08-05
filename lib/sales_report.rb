@@ -1,5 +1,6 @@
 require 'csv'
 require_relative 'raffle_mailer'
+require_relative 'raffle_tickets'
 
 class SalesReport
   def initialize(source:, destination:)
@@ -16,8 +17,8 @@ class SalesReport
     end
     destination_file.path
   ensure
-    # raffle_tickets.close
-    destination_file.close
+    raffle_tickets.close
+    destination_file.close if destination_file
     source_file.close
   end
 
@@ -48,11 +49,10 @@ class SalesReport
   end
 
   def raffle_mailer
-    @raffle_mailer ||= RaffleMailer.new(api_key: ENV.fetch('SENDGRID_API_KEY'))
+    @raffle_mailer ||= RaffleMailer.new
   end
 
   def raffle_tickets
-    # @raffle_tickets ||= RaffleTickets.load
-    @raffle_ticket ||= (1..100).to_a
+    @raffle_tickets ||= RaffleTickets.load
   end
 end

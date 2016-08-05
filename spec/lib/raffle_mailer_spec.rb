@@ -63,5 +63,13 @@ RSpec.describe RaffleMailer do
         expect(send_raffle_confirmation).to eq(status: 500, mailed_at: nil)
       end
     end
+    context 'when the mailer is disbaled' do
+      before do
+        stub_const('ENV', ENV.to_hash.merge('DISABLE_MAILER' => 'true'))
+      end
+      it 'return code 100' do
+        expect(send_raffle_confirmation).to eq(status: 100, mailed_at: 'mailer disabled by user')
+      end
+    end
   end
 end

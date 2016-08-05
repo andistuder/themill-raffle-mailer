@@ -5,7 +5,7 @@ class RaffleMailer
   include SendGrid
   FROM_EMAIL = 'friends@themill-coppermill.org'.freeze
 
-  def initialize(api_key)
+  def initialize(api_key = ENV.fetch('SENDGRID_API_KEY'))
     @send_grid = SendGrid::API.new(api_key: api_key)
   end
 
@@ -15,7 +15,7 @@ class RaffleMailer
     to = Email.new(email: email)
     content = Content.new(type: 'text/plain', value: raffle_mail.body)
     mail = Mail.new(from, raffle_mail.subject_line, to, content)
-
+    return { status: 100, mailed_at: 'mailer disabled by user' } if ENV['DISABLE_MAILER'] == 'true'
     response = send_grid.client.mail._('send').post(request_body: mail.to_json)
     { status: response.status_code, mailed_at: response.headers['date']&.first }
   rescue StandardError => e

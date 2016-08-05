@@ -11,15 +11,12 @@ class SalesReport
   def email_buyers
     destination_csv = CSV.new(destination_file)
     CSV.new(source_file, headers: true).each_with_index do |sales_record, i|
-      destination_csv << sales_record.headers + %w(email_status emailed_at) if i == 0
-      destination_csv << if sales_record[' Item ID'] == 'Raffle'
-                           sales_record.to_h.values + email_buyer(sales_record).values
-                         else
-                           sales_record
-                         end
+      destination_csv << sales_record.headers + %w(raffle_tickets email_status emailed_at) if i == 0
+      destination_csv << process(sales_record)
     end
     destination_file.path
   ensure
+    # raffle_tickets.close
     destination_file.close
     source_file.close
   end
@@ -28,17 +25,34 @@ class SalesReport
 
   attr_reader :source_file, :destination_file
 
-  def email_buyer(sales_record)
+  def process(sales_record)
+    return sales_record unless sales_record[' Item ID'] == 'Raffle'
+    values = sales_record.to_h.values
+    tickets = issue_raffle_tickets(sales_record)
+    values << tickets.join(':')
+    values + email_buyer(sales_record, tickets).values
+  end
+
+  def issue_raffle_tickets(sales_record)
+    raffle_tickets.shift(sales_record[' Gross'].to_i)
+  end
+
+  def email_buyer(sales_record, tickets)
     raffle_mailer.send_raffle_confirmation(
       email: sales_record[' From Email Address'],
       email_vars: {
         first_name: sales_record[' Name'],
-        raffle_numbers: [],
+        raffle_numbers: tickets,
       },
     )
   end
 
   def raffle_mailer
     @raffle_mailer ||= RaffleMailer.new(api_key: ENV.fetch('SENDGRID_API_KEY'))
+  end
+
+  def raffle_tickets
+    # @raffle_tickets ||= RaffleTickets.load
+    @raffle_ticket ||= (1..100).to_a
   end
 end

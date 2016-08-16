@@ -2,7 +2,8 @@ require 'erb'
 
 class RaffleEmail
   def initialize(email_vars = {})
-    @draw_date_string = '17 October 2016'
+
+    @draw_date_string = '1st October 2016'
     @signatory = 'Andi Studer'
     @first_name = email_vars[:first_name] || 'friend'
     @raffle_numbers = email_vars[:raffle_numbers] || []

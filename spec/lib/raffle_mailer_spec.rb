@@ -27,7 +27,7 @@ RSpec.describe RaffleMailer do
     let(:post_body) do
       {
         request_body: {
-          'from' => { 'email' => 'friends@themill-coppermill.org' },
+          'from' => { 'email' => 'friends@themill-coppermill.org', 'name' => 'The Mill E17' },
           'subject' => 'Hello World',
           'personalizations' => [{ 'to' => [{ 'email' => 'raffle_player@example.com' }] }],
           'content' => [{ 'type' => 'text/plain', 'value' => 'Hello, Email!' }],

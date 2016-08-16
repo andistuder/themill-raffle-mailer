@@ -4,6 +4,7 @@ require_relative 'raffle_email.rb'
 class RaffleMailer
   include SendGrid
   FROM_EMAIL = 'friends@themill-coppermill.org'.freeze
+  FROM_NAME = 'The Mill E17'.freeze
 
   def initialize(api_key = ENV.fetch('SENDGRID_API_KEY'))
     @send_grid = SendGrid::API.new(api_key: api_key)
@@ -11,7 +12,7 @@ class RaffleMailer
 
   def send_raffle_confirmation(email:, email_vars: {})
     raffle_mail = RaffleEmail.new(email_vars)
-    from = Email.new(email: FROM_EMAIL)
+    from = Email.new(email: FROM_EMAIL, name: FROM_NAME)
     to = Email.new(email: email)
     content = Content.new(type: 'text/plain', value: raffle_mail.body)
     mail = Mail.new(from, raffle_mail.subject_line, to, content)

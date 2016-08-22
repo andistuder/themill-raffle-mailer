@@ -4,7 +4,9 @@ require 'raffle_tickets'
 RSpec.describe RaffleTickets do
   let(:store_location) { File.expand_path('../../fixtures/raffle_tickets.yaml', __FILE__) }
   subject(:load_raffle_tickets) { described_class.load(store_location: store_location) }
-  let(:expected_tickets) { %w(XY1 XY2 XY3 XY4 XY5 XY6 XY7 AC2 AC3 AC4 AC5 AC6 AC7 AC8) }
+  let(:expected_tickets) do
+    %w(XY0001 XY0002 XY0003 XY0004 XY0005 XY0006 XY0007 AC0002 AC0003 AC0004 AC0005 AC0006 AC0007 AC0008)
+  end
   describe '.load' do
     it 'returns an raffle tickets object' do
       expect(load_raffle_tickets).to be_a(RaffleTickets)
@@ -18,8 +20,8 @@ RSpec.describe RaffleTickets do
     let!(:raffle_ticket) { load_raffle_tickets }
 
     it 'returns tickets as requested' do
-      expect(raffle_ticket.shift(2)).to eq(%w(XY1 XY2))
-      expect(raffle_ticket.shift(2)).to eq(%w(XY3 XY4))
+      expect(raffle_ticket.shift(2)).to eq(%w(XY0001 XY0002))
+      expect(raffle_ticket.shift(2)).to eq(%w(XY0003 XY0004))
     end
 
     context 'when running out of tickets' do

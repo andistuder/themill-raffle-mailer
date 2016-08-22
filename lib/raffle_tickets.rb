@@ -4,7 +4,7 @@ class RaffleTickets
 
   def self.load(store_location: TICKET_STORE_LOCATION)
     tickets = YAML.load(File.read(store_location)).map do |series|
-      Range.new(series['from'].to_i, series['to'].to_i).map { |i| series['prefix'] + i.to_s }
+      Range.new(series['from'].to_i, series['to'].to_i).map { |i| series['prefix'] + i.to_s.rjust(4, '0') }
     end.flatten
     new(tickets)
   end

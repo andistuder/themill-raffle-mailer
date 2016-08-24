@@ -27,7 +27,7 @@ class SalesReport
   attr_reader :source_file, :destination_file
 
   def process(sales_record)
-    return sales_record unless sales_record[' Item ID'] == 'Raffle'
+    return sales_record unless sales_record[' Type'] == 'Shopping Cart Item'
     values = sales_record.to_h.values
     tickets = issue_raffle_tickets(sales_record)
     values << tickets.join(':')

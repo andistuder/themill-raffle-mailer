@@ -14,6 +14,7 @@ RSpec.describe SalesReport do
                status: 202, mailed_at: 'Tue, 02 Aug 2016 19:00:42 GMT'
              })
     end
+    let(:dummy_store) { File.expand_path('../../fixtures/raffle_tickets2.yaml', __FILE__) }
 
     around do |example|
       begin
@@ -26,7 +27,8 @@ RSpec.describe SalesReport do
     end
 
     before do
-      allow(ENV).to receive(:fetch).with('SENDGRID_API_KEY').and_return('dummy_key')
+      stub_const('ENV', ENV.to_hash.merge('SENDGRID_API_KEY' => 'dummy_key'))
+      stub_const('ENV', ENV.to_hash.merge('TICKET_STORE_LOCATION' => dummy_store))
       allow(RaffleMailer).to receive(:new).and_return(raffle_mailer)
     end
 

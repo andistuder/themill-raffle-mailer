@@ -1,8 +1,8 @@
 require 'yaml'
 class RaffleTickets
-  TICKET_STORE_LOCATION = File.expand_path('../../data/raffle_tickets.yaml', __FILE__)
+  DEFAULT_STORE_LOCATION = File.expand_path('../../data/raffle_tickets.yaml', __FILE__)
 
-  def self.load(store_location: TICKET_STORE_LOCATION)
+  def self.load(store_location: ENV.fetch('TICKET_STORE_LOCATION', DEFAULT_STORE_LOCATION))
     tickets = YAML.load(File.read(store_location)).map do |series|
       Range.new(series['from'].to_i, series['to'].to_i).map { |i| series['prefix'] + i.to_s.rjust(4, '0') }
     end.flatten

@@ -45,7 +45,7 @@ class SalesReport
   end
 
   def email_buyer(sales_record, tickets)
-    emails = extract_emails(sales_record)
+    emails = extract_emails(sales_record).uniq
     raffle_mailer.send_raffle_confirmation(
       email: emails.shift,
       email_vars: {

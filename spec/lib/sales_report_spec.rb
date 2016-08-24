@@ -36,5 +36,57 @@ RSpec.describe SalesReport do
       # FileUtils.cp destination_file.path, destination_fixture
       expect(CSV.read(destination_file.path)).to eq(CSV.read(destination_fixture))
     end
+
+    it 'calls the mailer' do
+      expect(raffle_mailer).to receive(:send_raffle_confirmation).with(
+        email: 'vicky.new@example.com',
+        email_vars: {
+          first_name: 'Victoria Viner',
+          raffle_numbers: %w(
+            GREEN0001
+            GREEN0002
+            GREEN0003
+            GREEN0004
+            GREEN0005
+            GREEN0006
+            GREEN0007
+            GREEN0008
+            GREEN0009
+            GREEN0010
+          ),
+          cc: 'vicky@example.com',
+        },
+
+      )
+
+      expect(raffle_mailer).to receive(:send_raffle_confirmation).with(
+        email: 'fiona@example.com',
+        email_vars: { first_name: 'Fiona Fuller',
+                      raffle_numbers: %w(GREEN0011 GREEN0012 GREEN0013 GREEN0014 GREEN0015),
+                      cc: nil },
+
+      )
+      expect(raffle_mailer).to receive(:send_raffle_confirmation).with(
+        email: 'stephen@example.com',
+        email_vars: {
+          first_name: 'Stephen Smith',
+          raffle_numbers: %w(
+            GREEN0016
+            GREEN0017
+            GREEN0018
+            GREEN0019
+            GREEN0020
+            GREEN0021
+            GREEN0022
+            GREEN0023
+            GREEN0024
+            GREEN0025
+          ),
+          cc: nil,
+        },
+      )
+
+      sales_report.email_buyers
+    end
   end
 end

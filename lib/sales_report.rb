@@ -12,7 +12,7 @@ class SalesReport
   def email_buyers
     destination_csv = CSV.new(destination_file)
     CSV.new(source_file, headers: true).each_with_index do |sales_record, i|
-      destination_csv << sales_record.headers + %w(raffle_tickets email_status emailed_at) if i == 0
+      destination_csv << sales_record.headers + extra_headers if i.zero?
       destination_csv << process(sales_record)
     end
     destination_file.path
@@ -26,11 +26,17 @@ class SalesReport
 
   attr_reader :source_file, :destination_file
 
+  def extra_headers
+    %w(raffle_tickets first_ticket last_ticket email_status emailed_at)
+  end
+
   def process(sales_record)
     return sales_record unless sales_record[' Type'] == 'Shopping Cart Item'
     values = sales_record.to_h.values
     tickets = issue_raffle_tickets(sales_record)
     values << tickets.join(':')
+    values << tickets.first
+    values << tickets.last
     values + email_buyer(sales_record, tickets).values
   end
 
@@ -39,13 +45,27 @@ class SalesReport
   end
 
   def email_buyer(sales_record, tickets)
+    emails = extract_emails(sales_record)
     raffle_mailer.send_raffle_confirmation(
-      email: sales_record[' From Email Address'],
+      email: emails.shift,
       email_vars: {
         first_name: sales_record[' Name'],
         raffle_numbers: tickets,
+        cc: emails.shift,
       },
     )
+  end
+
+  def extract_emails(sales_record)
+    emails = []
+    emails << detect_valid_email(sales_record[' Custom Number'])
+    emails << sales_record[' From Email Address']
+    emails.compact
+  end
+
+  def detect_valid_email(string)
+    return unless string
+    string.split(';;').detect { |s| /^.+@.+\..+$/.match(s.strip) }.strip.downcase
   end
 
   def raffle_mailer

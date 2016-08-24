@@ -12,10 +12,13 @@ class RaffleMailer
 
   def send_raffle_confirmation(email:, email_vars: {})
     raffle_mail = RaffleEmail.new(email_vars)
-    from = Email.new(email: FROM_EMAIL, name: FROM_NAME)
-    to = Email.new(email: email)
-    content = Content.new(type: 'text/plain', value: raffle_mail.body)
-    mail = Mail.new(from, raffle_mail.subject_line, to, content)
+
+    mail = Mail.new
+    mail.from = Email.new(email: FROM_EMAIL, name: FROM_NAME)
+    mail.subject = raffle_mail.subject_line
+    mail.personalizations = personalization(email, email_vars[:cc])
+    mail.contents = Content.new(type: 'text/plain', value: raffle_mail.body)
+
     return { status: 100, mailed_at: 'mailer disabled by user' } if ENV['DISABLE_MAILER'] == 'true'
     response = send_grid.client.mail._('send').post(request_body: mail.to_json)
     { status: response.status_code, mailed_at: response.headers['date']&.first }
@@ -27,4 +30,11 @@ class RaffleMailer
   private
 
   attr_reader :send_grid
+
+  def personalization(to, cc)
+    personalization = Personalization.new
+    personalization.to = Email.new(email: to)
+    personalization.cc = Email.new(email: cc) if cc
+    personalization
+  end
 end

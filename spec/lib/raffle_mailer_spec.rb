@@ -7,7 +7,7 @@ RSpec.describe RaffleMailer do
     subject(:send_raffle_confirmation) do
       described_class.new(api_key).send_raffle_confirmation(email: recipient, email_vars: email_vars)
     end
-    let(:email_vars) { double(:email_vars) }
+    let(:email_vars) { { cc: nil } }
     let(:send_grid) { double(:send_grid, client: double(:client, mail: mail)) }
     let(:raffle_email) { double(:raffle_email, subject_line: 'Hello World', body: 'Hello, Email!') }
     let(:mail) { double(:mail, _: mail_helper) }

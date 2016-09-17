@@ -58,9 +58,9 @@ class SalesReport
 
   def extract_emails(sales_record)
     emails = []
-    emails << detect_valid_email(sales_record[' Custom Number'])
-    emails << sales_record[' From Email Address']
-    emails.compact
+    emails << detect_valid_email(sales_record[' Custom Number'])&.downcase
+    emails << sales_record[' From Email Address']&.downcase
+    emails.compact.uniq
   end
 
   def detect_valid_email(string)

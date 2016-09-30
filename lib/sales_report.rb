@@ -65,7 +65,7 @@ class SalesReport
 
   def detect_valid_email(string)
     return unless string
-    string.split(';;').detect { |s| /^.+@.+\..+$/.match(s.strip) }.strip.downcase
+    string.split(';;').detect { |s| /^.+@.+\..+$/.match(s.strip) }&.strip&.downcase
   end
 
   def raffle_mailer
